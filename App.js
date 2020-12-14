@@ -1,21 +1,48 @@
-import React from 'react';
-import { StyleSheet, Text, SafeAreaView, ScrollView } from 'react-native';
+import React, {useRef} from 'react';
+import { StyleSheet, Text, SafeAreaView, ScrollView, View, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants';
 
+const itemHeight = 50;
+const list = [];
+for(let i=0;i<100;i++){
+  list.push({
+    key: i,
+    value: i
+  })
+}
+
 const App = () => {
+  const scrollRef = useRef(null);
+  const handleScrollTo = () => {
+    scrollRef.current.scrollTo({y: 500, x: 0})
+    console.log('scrollRef', scrollRef.current.scrollTo)
+  }
+  const onScroll = (e) => {
+    console.log('onScroll', JSON.stringify(e))
+  }
+    
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <Text style={styles.text}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </Text>
+      <ScrollView 
+        onScroll={onScroll}
+        style={styles.scrollView} 
+        ref={scrollRef}>
+        {
+          list.map(({key, value}) => (
+            <View key={key} style={[styles.item, {borderColor: '#' + Math.random().toString(16).substr(2, 6).toUpperCase()}]}>
+              <Text style={[styles.text]}>
+                {value * itemHeight + 'px'}
+              </Text>
+            </View>
+          ))
+        }
       </ScrollView>
+      <TouchableOpacity
+        style={{width: 100, height: 100, position: 'absolute', left: 0, top: 0}}
+        onPress={handleScrollTo}
+      >
+        <Text style={{fontSize: 18}}>滚动</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -26,11 +53,18 @@ const styles = StyleSheet.create({
     marginTop: Constants.statusBarHeight,
   },
   scrollView: {
-    backgroundColor: 'pink',
-    marginHorizontal: 20,
+    height: '100vh',
+    overflowY: 'hidden'
+  },
+  item: {
+    height: itemHeight,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'solid'
   },
   text: {
-    fontSize: 42,
+    fontSize: 18,
   },
 });
 
